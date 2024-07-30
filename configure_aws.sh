@@ -31,7 +31,7 @@ CACHE_FILES_EXIST=$(find $HOME/.aws/sso/cache -name "*.json" 2> /dev/null | wc -
 if [ $CACHE_FILES_EXIST -lt 2 ]; then
    echo "Cache files don't exist, attempting SSO login";
    # Retrieve initial access token and configure the sso-session
-   aws sso login --sso-session bh-sso
+   aws sso login --sso-session $SSO_SESSION_NAME
 fi
 
 # Check the access token hasn't expired
@@ -41,7 +41,7 @@ current_time=$(date "+%s")
  
 if (( expiry_time < current_time )); then 
     echo "Access token has expired, requesting new access token"
-    aws sso login --sso-session bh-sso
+    aws sso login --sso-session $SSO_SESSION_NAME
 fi
 
 ACCESS_TOKEN=$(for file in ~/.aws/sso/cache/*; do if grep -q "startUrl" $file; then cat $file | jq -r ".accessToken"; fi; done)
